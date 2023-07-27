@@ -1,0 +1,20 @@
+
+syntax = "proto3";
+package mam;
+
+message TradeStockPosition
+{
+    string symbol = 1;
+    int32 quantity = 2;
+}
+
+message TradeAccountRsp
+{
+    int32 accountId = 1;
+    string host = 2;
+    StockInfos positions = 3;
+}
+
+message StockInfos {
+    repeated TradeStockPosition stocks = 1;
+}

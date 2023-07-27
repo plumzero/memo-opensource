@@ -1,0 +1,32 @@
+
+syntax = "proto3";
+package mam;
+
+// 第一测试区间
+
+message AccountOverviews {
+    int32 id = 1;
+    repeated AccountOverview content = 2;
+}
+
+message AccountOverview {
+    int32 accountid = 1;
+    double turnover = 2;
+    double rate = 3;
+    double fee = 4;
+    double profit = 5;
+    double canceled = 6;
+    double failed = 7;
+    double acceptcost = 8;
+    double matchcost = 9;
+    double base = 10;
+    double close_profit = 11;
+    int32 server = 12;
+    string group = 13;
+}
+
+// 第二测试区间
+
+message HistoryResult {
+  map <int32,AccountOverviews> dic = 1;
+}

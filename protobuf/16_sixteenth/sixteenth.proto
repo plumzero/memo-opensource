@@ -1,0 +1,11 @@
+
+syntax = "proto3";
+package mam;
+
+message OrderMatchResult
+{
+    int32 reqId = 1;
+    string orderId = 2;
+    int32 dealPrice = 3;
+    int32 dealVolume = 4;
+}

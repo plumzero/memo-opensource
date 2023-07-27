@@ -1,0 +1,162 @@
+
+syntax = "proto3";
+package mam;
+
+import "google/protobuf/descriptor.proto";
+
+extend google.protobuf.FieldOptions {
+  FieldRule xrule = 10086;
+}
+
+message FieldRule {
+    string str_regex = 1;
+    string str_in = 2;
+    string str_nin = 3;
+    string str_eq = 4;
+    string str_ne = 5;
+    
+    double eq = 11;
+    double ne = 12;
+    double gt = 13;
+    double ge = 14;
+    double lt = 15;
+    double le = 16;
+
+    int32 and_true = 21;
+    int32 or_true = 22;
+    int32 xor_true = 23;
+    int32 and_false = 24;
+    int32 or_false = 25;
+    int32 xor_false = 26;
+}
+
+message SceneString {
+    // string
+    string iams_in = 1 [ (xrule) = { str_in:"x" } ];
+    string iams_ins = 2 [ (xrule) = { str_in:"er" } ];
+    string iams_nin = 3 [ (xrule) = { str_nin:"y" } ];
+    string iams_nins = 4 [ (xrule) = { str_nin:"xr" } ];
+    string iams_eq = 5 [ (xrule) = { str_eq:"l" } ];
+    string iams_eqs = 6 [ (xrule) = { str_eq:"li" } ];
+    string iams_eqss = 7 [ (xrule) = { str_eq:"hello world" } ];
+    string iams_ne = 8 [ (xrule) = { str_ne:"o" } ];
+    string iams_nes = 9 [ (xrule) = { str_ne:"oo" } ];
+    string iams_ness = 10 [ (xrule) = { str_ne:"grok it" } ];
+    string iams_in_symbol = 11 [ (xrule) = { str_in:"_" } ];
+    string iams_nin_symbol = 12 [ (xrule) = { str_nin:"_" } ];
+}
+
+message SceneInt {
+
+    int32 iami_eq = 1 [ (xrule) = { eq:1980 } ];
+    int32 iami_ne = 2 [ (xrule) = { ne:-8721 } ];
+    int32 iami_gt = 3 [ (xrule) = { gt:1784 } ];
+    int32 iami_ge = 4 [ (xrule) = { ge:-3029 } ];
+    int32 iami_lt = 5 [ (xrule) = { lt:-8654 } ];
+    int32 iami_le = 6 [ (xrule) = { le:99999999 } ];
+    int32 iami_ge_lt = 7 [ (xrule) = { ge:1200, lt:9800 } ];
+    int32 iami_eq_zero = 8 [ (xrule) = { eq:0.000001 } ];
+    int32 iami_ne_zero = 9 [ (xrule) = { ne:-0.000001 } ];
+    int32 iami_gt_zero = 10 [ (xrule) = { gt:0.000001 } ];
+    int32 iami_ge_zero = 11 [ (xrule) = { ge:-0.000001 } ];
+    int32 iami_lt_zero = 12 [ (xrule) = { lt:0.000001 } ];
+    int32 iami_le_zero = 13 [ (xrule) = { le:-0.000001 } ];
+    int32 iami_ge_lt_zero_left = 14 [ (xrule) = { ge:0.000001, lt:9800 } ];
+    int32 iami_ge_lt_zero_right = 15 [ (xrule) = { ge:-2300, lt:-0.000001 } ];
+}
+
+message SceneUInt {
+
+    uint32 iamui_eq = 1 [ (xrule) = { eq:1980 } ];
+    uint32 iamui_ne = 2 [ (xrule) = { ne:8721 } ];
+    uint32 iamui_gt = 3 [ (xrule) = { gt:1784 } ];
+    uint32 iamui_ge = 4 [ (xrule) = { ge:3029 } ];
+    uint32 iamui_lt = 5 [ (xrule) = { lt:8654 } ];
+    uint32 iamui_le = 6 [ (xrule) = { le:99999999 } ];
+    uint32 iamui_ge_lt = 7 [ (xrule) = { ge:1200, lt:9800 } ];
+    uint32 iamui_eq_zero = 8 [ (xrule) = { eq:0.000001 } ];
+    uint32 iamui_ne_zero = 9 [ (xrule) = { ne:-0.000001 } ];
+    uint32 iamui_gt_zero = 10 [ (xrule) = { gt:0.000001 } ];
+    uint32 iamui_ge_zero = 11 [ (xrule) = { ge:-0.000001 } ];
+    uint32 iamui_le_zero = 12 [ (xrule) = { le:-0.000001 } ];
+    uint32 iamui_ge_lt_zero_left = 13 [ (xrule) = { ge:0.000001, lt:9800 } ];
+}
+
+message SceneLong {
+
+    int64 iaml_eq = 1 [ (xrule) = { eq:1980 } ];
+    int64 iaml_ne = 2 [ (xrule) = { ne:-8721 } ];
+    int64 iaml_gt = 3 [ (xrule) = { gt:1784 } ];
+    int64 iaml_ge = 4 [ (xrule) = { ge:-3029 } ];
+    int64 iaml_lt = 5 [ (xrule) = { lt:-8654 } ];
+    int64 iaml_le = 6 [ (xrule) = { le:99999999 } ];
+    int64 iaml_ge_lt = 7 [ (xrule) = { ge:1200, lt:9800 } ];
+    int64 iaml_eq_zero = 8 [ (xrule) = { eq:0.000001 } ];
+    int64 iaml_ne_zero = 9 [ (xrule) = { ne:-0.000001 } ];
+    int64 iaml_gt_zero = 10 [ (xrule) = { gt:0.000001 } ];
+    int64 iaml_ge_zero = 11 [ (xrule) = { ge:-0.000001 } ];
+    int64 iaml_lt_zero = 12 [ (xrule) = { lt:0.000001 } ];
+    int64 iaml_le_zero = 13 [ (xrule) = { le:-0.000001 } ];
+    int64 iaml_ge_lt_zero_left = 14 [ (xrule) = { ge:0.000001, lt:9800 } ];
+    int64 iaml_ge_lt_zero_right = 15 [ (xrule) = { ge:-2300, lt:-0.000001 } ];
+}
+
+message SceneULong {
+
+    uint64 iamul_eq = 1 [ (xrule) = { eq:1980 } ];
+    uint64 iamul_ne = 2 [ (xrule) = { ne:8721 } ];
+    uint64 iamul_gt = 3 [ (xrule) = { gt:1784 } ];
+    uint64 iamul_ge = 4 [ (xrule) = { ge:3029 } ];
+    uint64 iamul_lt = 5 [ (xrule) = { lt:8654 } ];
+    uint64 iamul_le = 6 [ (xrule) = { le:99999999 } ];
+    uint64 iamul_ge_lt = 7 [ (xrule) = { ge:1200, lt:9800 } ];
+    uint64 iamul_eq_zero = 8 [ (xrule) = { eq:0.000001 } ];
+    uint64 iamul_ne_zero = 9 [ (xrule) = { ne:-0.000001 } ];
+    uint64 iamul_gt_zero = 10 [ (xrule) = { gt:0.000001 } ];
+    uint64 iamul_ge_zero = 11 [ (xrule) = { ge:-0.000001 } ];
+    uint64 iamul_le_zero = 12 [ (xrule) = { le:-0.000001 } ];
+    uint64 iamul_ge_lt_zero_left = 13 [ (xrule) = { ge:0.000001, lt:9800 } ];
+}
+
+message SceneFloat {
+
+    float iamf_eq = 1 [ (xrule) = { eq:1980.123 } ];
+    float iamf_ne = 2 [ (xrule) = { ne:-8721.456 } ];
+    float iamf_gt = 3 [ (xrule) = { gt:1784.789 } ];
+    float iamf_ge = 4 [ (xrule) = { ge:-3029.123 } ];
+    float iamf_lt = 5 [ (xrule) = { lt:-8654.456 } ];
+    float iamf_le = 6 [ (xrule) = { le:99999999.789 } ];
+    float iamf_ge_lt = 7 [ (xrule) = { ge:1200.123, lt:9800.456 } ];
+    float iamf_eq_zero = 8 [ (xrule) = { eq:0.000001 } ];
+    float iamf_ne_zero = 9 [ (xrule) = { ne:-0.000001 } ];
+    float iamf_gt_zero = 10 [ (xrule) = { gt:0.000001 } ];
+    float iamf_ge_zero = 11 [ (xrule) = { ge:-0.000001 } ];
+    float iamf_lt_zero = 12 [ (xrule) = { lt:0.000001 } ];
+    float iamf_le_zero = 13 [ (xrule) = { le:-0.000001 } ];
+    float iamf_ge_lt_zero_left = 14 [ (xrule) = { ge:0.000001, lt:9800.123 } ];
+    float iamf_ge_lt_zero_right = 15 [ (xrule) = { ge:-2300.456, lt:-0.000001 } ];
+}
+
+message SceneDouble {
+
+    double iamd_eq = 1 [ (xrule) = { eq:1980.123 } ];
+    double iamd_ne = 2 [ (xrule) = { ne:-8721.456 } ];
+    double iamd_gt = 3 [ (xrule) = { gt:1784.789 } ];
+    double iamd_ge = 4 [ (xrule) = { ge:-3029.123 } ];
+    double iamd_lt = 5 [ (xrule) = { lt:-8654.456 } ];
+    double iamd_le = 6 [ (xrule) = { le:99999999.789 } ];
+    double iamd_ge_lt = 7 [ (xrule) = { ge:1200.123, lt:9800.456 } ];
+    double iamd_eq_zero = 8 [ (xrule) = { eq:0.000001 } ];
+    double iamd_ne_zero = 9 [ (xrule) = { ne:-0.000001 } ];
+    double iamd_gt_zero = 10 [ (xrule) = { gt:0.000001 } ];
+    double iamd_ge_zero = 11 [ (xrule) = { ge:-0.000001 } ];
+    double iamd_lt_zero = 12 [ (xrule) = { lt:0.000001 } ];
+    double iamd_le_zero = 13 [ (xrule) = { le:-0.000001 } ];
+    double iamd_ge_lt_zero_left = 14 [ (xrule) = { ge:0.000001, lt:9800.123 } ];
+    double iamd_ge_lt_zero_right = 15 [ (xrule) = { ge:-2300.456, lt:-0.000001 } ];
+}
+
+message SceneOther {
+    double rate =  1            [ (xrule) = { ge:0.000001, le:1 } ];
+    int32 server = 2            [ (xrule) = { ge:1, le:99 } ];
+}

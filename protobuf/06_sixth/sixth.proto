@@ -1,0 +1,17 @@
+
+syntax = "proto3";
+package mam;
+
+enum ShouldType {
+    NoneType = 0;
+    NameType = 1;
+    TimeType = 2;
+}
+
+message ForCheckMsg
+{
+    string name = 1;
+    int32 time = 2;
+    map <string, ShouldType> dic = 3;
+    int32 id = 4;
+}

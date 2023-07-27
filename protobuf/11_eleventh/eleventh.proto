@@ -1,0 +1,26 @@
+
+syntax = "proto3";
+package mam;
+
+message SaveRequest {
+    string date = 1;
+    repeated string strs = 2; 
+    repeated AccountOverview account_overview = 3;
+    repeated ProfitDetail profit_detail = 4;
+}
+
+message AccountOverview {
+    int32 accountid = 1;
+    double turnover = 2;
+    double rate = 3;
+    double fee = 4;
+    double profit = 5;
+}
+
+message ProfitDetail {
+    int32 accountid = 1;
+    string symbol = 2;
+    int32 cfgvol = 3;
+    int32 buyvol = 4;
+    int32 sellvol = 5;
+}

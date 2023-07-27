@@ -1,0 +1,71 @@
+
+syntax = "proto3";
+package mam;
+
+import "google/protobuf/descriptor.proto";
+
+message CardOptions {
+    string type = 1;
+    int32 max = 2;
+}
+
+extend google.protobuf.FieldOptions {
+    CardOptions opt = 1234;
+}
+
+message CardSet {
+    string omit = 1;
+    CardMadolche cm1 = 2 [
+        (opt).type = "Monster",
+        (opt).max = 1
+    ];
+    CardMadolche cm2 = 3 [
+        (opt).type = "Magic",
+        (opt).max = 3
+    ];
+    CardMadolche cm3 = 4 [
+        (opt).type = "Trap",
+        (opt).max = 3
+    ];
+    CardGalatea cg1 = 5 [
+        (opt).type = "Magic",
+        (opt).max = 2
+    ];
+    CardGalatea cg2 = 6 [
+        (opt).type = "Monster",
+        (opt).max = 1
+    ];
+    CardZoodiac cz1 = 7 [
+        (opt).type = "Monster",
+        (opt).max = 2
+    ];
+    CardAltergeist ca1 = 8 [
+        (opt).type = "Monster",
+        (opt).max = 1
+    ];
+    CardPerformage cf1 = 9 [
+        (opt).type = "Monster",
+        (opt).max = 0
+    ];
+}
+
+message CardMadolche {
+    string madolche = 1;
+}
+
+message CardGalatea {
+    string galatea = 1;
+}
+
+message CardZoodiac {
+    string zoodiac = 1;
+}
+
+message CardAltergeist {
+    string altergeist = 1;
+}
+
+message CardPerformage {
+    string performage = 1;
+}
+

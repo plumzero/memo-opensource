@@ -1,0 +1,13 @@
+
+syntax = "proto3";
+package mam;
+
+message TradeAccountRsp
+{
+    int32 accountId = 1;
+    string host = 2;
+}
+
+message AccountInfos {
+    repeated TradeAccountRsp accounts = 1;
+}

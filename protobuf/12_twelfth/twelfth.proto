@@ -1,0 +1,56 @@
+
+syntax = "proto3";
+package mam;
+
+message LoadResult {
+    map <string, AccountOverviews> map_account_overview = 1;
+    map <string, DataIndexList> map_data_index_list = 2;
+}
+
+message AccountOverviews {
+    repeated AccountOverview content = 1;
+}
+
+message AccountOverview {
+    int32 accountid = 1;
+    double turnover = 2;
+    double rate = 3;
+    double fee = 4;
+    double profit = 5;
+}
+
+message DataIndexList {
+    map <string, IndexList> dic = 1;
+}
+
+message IndexList {
+    repeated SysInfo snapshots = 1;
+}
+
+message SysInfo {
+    int32 countSZ = 1;
+    int32 countSH = 2;
+    int32 countCF = 3;
+    int32 countSZ_reverse = 4;
+    int32 countSH_reverse = 5;
+
+    double sumSZ_delay = 6;
+    double sumSH_delay = 7;
+    double sumCF_delay = 8;
+
+    int32 countSZ_delay = 9;
+    int32 countSH_delay = 10;
+
+    int32 countPdt_pos = 11;
+    int32 countPdt_neg = 12;
+    int32 countPdt_invalid = 13;
+
+    double consume_CalFeat = 14;
+    double consume_CalPdt = 15;
+    double maxConsume_CalFeat = 16;
+    double maxConsume_CalPdt = 17;
+    int32 count_CalFeat = 18;
+    int32 count_CalPdt = 19;
+    int32 ntime = 20;
+}
+

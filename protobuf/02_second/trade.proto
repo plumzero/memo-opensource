@@ -1,0 +1,130 @@
+
+syntax = "proto3";
+package mam;
+
+enum OrderStatusType
+{
+    OrderStatus_None = 0;
+    OrderStatus_Accepted = 1;
+    OrderStatus_TotalMatch = 2;
+    OrderStatus_PartialRemoved = 3;
+    OrderStatus_TotalRemoved = 4;
+    OrderStatus_Fail = 5;
+    OrderStatus_Removing = 6;
+    OrderStatus_Pending = 7;
+    OrderStatus_PartialMatch = 8;
+}
+
+enum TradeAccountStatus
+{
+    Connected = 0;
+    Unconnected = 1;
+    ConnectedAndTradable = 2;
+    ConnectedAndUntradable = 3;
+}
+
+enum TradeOrderErrorCode
+{
+    JErrorType_None = 0;
+    JErrorType_TooHighFrequency = 100;
+    JErrorType_OrderNotFound = 101;
+    JErrorType_NotTradingTime = 102;
+    JErrorType_OverHighOrLow = 103;
+    JErrorType_InvalidVol = 104;
+    JErrorType_Cannotselfdeal = 105;
+    JErrorType_CannotWithDrawn = 106;
+    JErrorType_NotEnoughLendingAmoutOrCaptial = 107;
+    JErrorType_StopTrade = 108;
+    JErrorType_NoSuchTradeType = 109;
+    JErrorType_RiskCantTrade = 110;
+    JErrorType_StrategyRiskCantWithDrawn = 111;
+    JErrorType_WithoutthisAuthority = 112;
+    JErrorType_InvalidCode = 113;
+    JErrorType_NoPisitionToClose = 114;
+    JErrorType_InvalidAction = 115;
+    JErrorType_NotSetTestBack = 116;
+    JErrorType_NotAvailableAccount = 117;
+    JErrorType_CenterServerError = 118;
+    JErrorType_NoPriority = 119;
+    JErrorType_NoAccountAvaliable = 120;
+    JErrorType_NotEnoughVolumeTobeUsed = 121;
+    JErrorType_NtimeDelay = 122;
+    JErrorType_PositionCheckFailed = 123;
+}
+
+message TradeOrder
+{
+    int32 reqId = 1;
+    string orderId = 2;
+    string symbol = 3;
+    int32 orderType = 4;
+    int32 tradeType = 5;
+    int32 orderPrice = 6;
+    int32 orderVolume = 7;
+    int32 nTime = 8;
+    int32 accountId = 9;
+    string tag = 10;
+    int32 timeout = 11;
+    bool force = 12;
+    int64 createTime = 13;
+    int64 submitTime = 14;
+    int64 acceptTime = 15;
+    int64 closeTime = 16;
+    int32 dealPrice = 17;
+    int32 dealVolume = 18;
+    OrderStatusType status = 19;
+    TradeOrderErrorCode errCode = 20;
+    string errDetail = 21;
+}
+
+message CancelOrder
+{
+    int32 reqId = 1;
+    string orderId = 2;
+}
+
+message OrderMatchResult
+{
+    int32 reqId = 1;
+    string orderId = 2;
+    string matchId = 3;
+    uint32 time = 4;
+    int32 dealPrice = 5;
+    int32 dealVolume = 6;
+}
+
+message OrderChangeResult
+{
+    int32 reqId = 1;
+    string orderId = 2;
+    uint32 time = 3;
+    OrderStatusType status = 4;
+    TradeOrderErrorCode errCode = 5;
+    string errDetail = 6;
+}
+
+message TradeOrderRsp
+{
+    repeated OrderMatchResult matches = 1;
+    repeated OrderChangeResult status = 2;
+}
+
+message TradeAccountQry
+{
+    int32 accountId = 1;
+}
+
+message TradeStockPosition
+{
+    string symbol = 1;
+    int32 quantity = 2;
+}
+
+message TradeAccountRsp
+{
+    int32 accountId = 1;
+    string host = 2;
+    TradeAccountStatus status = 3;
+    double balance = 4;
+    repeated TradeStockPosition positions = 5;
+}

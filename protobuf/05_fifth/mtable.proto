@@ -1,0 +1,12 @@
+
+syntax = "proto3";
+package mam;
+
+message PriceList {
+    string date = 1;
+    map <string, PriceObj> dic = 2;
+}
+
+message PriceObj {
+    string price = 1;
+}

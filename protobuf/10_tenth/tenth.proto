@@ -1,0 +1,87 @@
+
+syntax = "proto3";
+package mam;
+
+import "google/protobuf/descriptor.proto";
+
+// 有效性约束选项
+message FieldRule {
+    uint32 str_len_max = 1;
+    uint32 str_len_min = 2;
+    uint32 pod_val_max = 3;
+    uint32 pod_val_min = 4;
+    string regex = 5;
+    int32 int32_as_key = 6;
+    string string_as_key = 7;
+}
+
+extend google.protobuf.FieldOptions {
+    FieldRule knightrule = 10086;
+}
+
+// 正式数据
+enum SaveMode 
+{
+    None   = 0;
+    Create = 1;
+    Update = 2;
+    Append = 3;
+}
+
+message SaveRequest {
+    SaveMode mode = 1;
+    string date = 2;
+    repeated AccountOverview account_overview = 3;
+    repeated ProfitDetail profit_detail = 4;
+    repeated AccountInfo account_info = 5;
+}
+
+message AccountOverview {
+    int32 accountid = 1;
+    double turnover = 2;
+    double rate = 3;
+    double fee = 4;
+    double profit = 5;
+    double canceled = 6;
+    double failed = 7;
+    double acceptcost = 8;
+    double matchcost = 9;
+    double base = 10;
+    double close_profit = 11;
+    int32 server = 12;
+    string group = 13;
+}
+
+message ProfitDetail {
+    int32 accountid = 1 [
+        (knightrule).int32_as_key = 1
+    ];
+    string symbol = 2 [
+        (knightrule).string_as_key = "1",
+        (knightrule).regex = "[\\d]{6}\\.(SH|sh|SZ|sz)"
+    ];
+    int32 cfgvol = 3 [
+        (knightrule).int32_as_key = 1
+    ];
+    int32 buyvol = 4;
+    int32 sellvol = 5;
+    double buyamount = 6;
+    double sellamount = 7;
+    double floatprofit = 8;
+    double settleprofit = 9;
+    double fee = 10;
+    int32 server = 11;
+}
+
+message AccountInfo {
+    uint32 id = 1;
+    string shcommission = 2;
+    string szcommission = 3;
+    int32 lowcost = 4;
+    string as = 5;
+    string buyType = 6;
+    string sellType = 7;
+    string group = 8;
+    string server = 9;
+}
+
