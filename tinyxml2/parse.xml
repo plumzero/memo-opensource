@@ -1,0 +1,13 @@
+<Configure>
+  <EcuVersion Used="true">4.00.98</EcuVersion>
+  <EcuSoftwareCode Used="true">4835001075D000400</EcuSoftwareCode>
+  <ECUKEY Used="true">641DA00D7FB14B518DA42BF4EF0C24F4</ECUKEY>
+  <DoIP_SA Used="true">1921</DoIP_SA>
+  <DoIP_TA Used="true">1929</DoIP_TA>
+  <DiagTool_IP Used="true">10.9.102.1</DiagTool_IP>
+  <TA_IP Used="true">10.9.102.2</TA_IP>
+  <FilePath Used="true">"/path/to/zip"</FilePath>
+  <MD5 Used="true" FileName="12345">d41d8cd98f00b204e9800998ecf8427e</MD5>
+  <Signature Used="true">d41d8cd98f00b204e9800998ecf8427e</Signature>
+  <Encryption_factor Used="true">d41d8cd98f00b204e9800998ecf8427e</Encryption_factor>
+</Configure>
