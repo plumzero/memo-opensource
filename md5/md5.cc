@@ -4,6 +4,11 @@
  */
 
 #include "md5.h"
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 /*
  * Constants defined by the MD5 algorithm
@@ -220,4 +225,38 @@ void md5File(FILE *file, uint8_t *result){
     free(input_buffer);
 
     memcpy(result, ctx.digest, 16);
+}
+
+void md5FileSpeed(const char* filename, uint8_t* result){
+	int fd = open(filename, O_RDONLY, 0644);
+	if (fd < 0)
+		return ;
+
+    long size = lseek(fd, 0, SEEK_END);
+    if (size == -1) {
+        close(fd);
+        return ;
+    }
+
+	void* start = mmap(NULL, size, PROT_READ, MAP_PRIVATE, fd, 0);
+    if (start == NULL) {
+        close(fd);
+        return ;
+    }
+    close(fd);
+
+    MD5Context ctx;
+    md5Init(&ctx);
+
+    long step = 1024;
+    for (long offset = 0; offset < size; offset += step) {
+        long n = (size - offset > step ? step : size - offset);     
+        md5Update(&ctx, (uint8_t*)start + offset, n);
+    }
+    
+    md5Finalize(&ctx);
+
+    memcpy(result, ctx.digest, 16);
+
+    munmap(start, size);
 }

@@ -8,6 +8,9 @@ option(ZLIB       "enable zlib"            ON)
 
 set(CMAKE_CXX_STANDARD 11)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-function -Wno-unused-variable -Wno-maybe-uninitialized -Wno-unused-but-set-variable")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unused-function -Wno-unused-variable -Wno-maybe-uninitialized -Wno-unused-but-set-variable")
+
 set(HPATCH_SRCS ${HPATCH_SRCS}
   ${PROJECT_SOURCE_DIR}/libHDiffPatch/HPatch/patch.c
   ${PROJECT_SOURCE_DIR}/file_for_patch.c
