@@ -12,4 +12,5 @@ set(CMAKE_CXX_STANDARD 11)
 include_directories(.)
 
 # add_subdirectory(01_first)
-add_subdirectory(02_second)
+# add_subdirectory(02_second)
+add_subdirectory(03_third)
