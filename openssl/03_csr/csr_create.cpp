@@ -26,16 +26,19 @@ int main(int argc, char* argv[])
   }
 
   X509_REQ* req = X509_REQ_new();
-  long version = 1;
+  long version = 0;
   int ret = X509_REQ_set_version(req, version);
   X509_NAME* name = X509_NAME_new();
   X509_NAME_ENTRY* entry = NULL;
+  const char* country_name = "CHINA";
+  entry = X509_NAME_ENTRY_create_by_txt(&entry, "countryName", V_ASN1_UTF8STRING, (unsigned char*)country_name, strlen(country_name));
+  X509_NAME_add_entry(name, entry, 0, -1);
+  const char* organization_name = "Person";
+  entry = X509_NAME_ENTRY_create_by_txt(&entry, "organizationName", V_ASN1_UTF8STRING, (unsigned char*)organization_name, strlen(organization_name));
+  X509_NAME_add_entry(name, entry, 0, -1);
   const char* common_name = "as-a-test";
   entry = X509_NAME_ENTRY_create_by_txt(&entry, "commonName", V_ASN1_UTF8STRING, (unsigned char *)common_name, strlen(common_name));
   X509_NAME_add_entry(name, entry, 0, -1);
-  const char* country_name = "CHINA";
-  entry = X509_NAME_ENTRY_create_by_txt(&entry, "countryName", V_ASN1_UTF8STRING, (unsigned char*)country_name, strlen(country_name));
-  X509_NAME_add_entry(name, entry, 1, -1);
   /* subject name */
   ret = X509_REQ_set_subject_name(req, name);
   /* pub key */
@@ -57,8 +60,8 @@ int main(int argc, char* argv[])
   ret = X509_REQ_add1_attr_by_txt(req, "organizationName", V_ASN1_UTF8STRING, (unsigned char*)attr_1, strlen(attr_1));
   const char* attr_2 = "Group One";
   ret = X509_REQ_add1_attr_by_txt(req, "organizationalUnitName", V_ASN1_UTF8STRING, (unsigned char*)attr_2, strlen(attr_2));
-  const EVP_MD *md = EVP_sha1();
-  unsigned char mdout[20] = {0};
+  const EVP_MD *md = EVP_sha256();
+  unsigned char mdout[32] = {0};
   unsigned int mdlen;
   ret = X509_REQ_digest(req, md, mdout, &mdlen);
   ret = X509_REQ_sign(req, pkey, md);
@@ -78,6 +81,17 @@ int main(int argc, char* argv[])
   PEM_write_bio_X509_REQ(b, req);
   BIO_free(b);
 
+  // 写入缓存
+  {
+    BIO *bm = BIO_new(BIO_s_mem());
+    PEM_write_bio_X509_REQ(bm, req);
+    unsigned char buf[4096] = {0};
+    int len = BIO_read(bm, buf, 4096);
+    printf("len=%d\n", len);
+    printf("%s\n", (const char*)buf);
+    BIO_free(bm);
+  }
+
   /* DER 编码: 写入结果有问题 */
   if (0) {
     int len = i2d_X509_REQ(req, NULL);
@@ -91,7 +105,7 @@ int main(int argc, char* argv[])
   }
 
   X509_REQ_free(req);
-  EVP_PKEY_free(pkey);
+  // 这里不能再调用 EVP_PKEY_free 对 pkey 进行释放了，否则在集成时可能出现错误(如 Bus error (core dumped))
 
   printf("===== test success =====\n");
   

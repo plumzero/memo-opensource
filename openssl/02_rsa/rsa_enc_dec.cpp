@@ -44,6 +44,7 @@ int main(int argc, char* argv[])
   long fsize = ftell(fin);
   fseek(fin, 0, SEEK_SET);
 
+  // PKCS #1 v1.5 padding. This currently is the most widely used mode.
   int padding = RSA_PKCS1_PADDING;
 
   // 公钥加密

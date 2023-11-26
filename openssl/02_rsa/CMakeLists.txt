@@ -12,5 +12,8 @@ target_link_libraries(rsa_enc_dec ${crypto_LIBRARY_NAME})
 add_executable(rsa_enc_dec2 rsa_enc_dec2.cpp)
 target_link_libraries(rsa_enc_dec2 ${crypto_LIBRARY_NAME})
 
+add_executable(rsa_enc_dec3 rsa_enc_dec3.cpp)
+target_link_libraries(rsa_enc_dec3 ${crypto_LIBRARY_NAME})
+
 add_executable(rsa_sign_verify rsa_sign_verify.cpp)
 target_link_libraries(rsa_sign_verify ${crypto_LIBRARY_NAME})

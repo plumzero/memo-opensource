@@ -24,6 +24,11 @@ int main()
     BIO_set_fp(in, stdout, BIO_NOCLOSE);
     X509_REQ_print(in, req);
 
+    // 打印公钥
+    EVP_PKEY* pubkey = X509_REQ_get_pubkey(req);
+    RSA* r = EVP_PKEY_get0_RSA(pubkey);
+    RSA_print_fp(stdout, r, 11);
+
     BIO_free(in);
     X509_REQ_free(req);
   }

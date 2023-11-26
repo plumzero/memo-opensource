@@ -6,6 +6,7 @@ option(BUILD_1_AES              "Build aes test"          ON)
 option(BUILD_2_RSA              "Build rsa test"          ON)
 option(BUILD_3_CSR              "Build csr test"          ON)
 option(BUILD_4_CRT              "Build crt test"          ON)
+option(BUILD_5_HASH             "Build hash test"          ON)
 #
 # if u wanna release, do like this `cmake -DCMAKE_BUILD_TYPE=Release`
 #
@@ -53,6 +54,10 @@ endif()
 
 if(BUILD_4_CRT)
     add_subdirectory(04_crt)
+endif()
+
+if(BUILD_5_HASH)
+    add_subdirectory(05_hash)
 endif()
 
 #
