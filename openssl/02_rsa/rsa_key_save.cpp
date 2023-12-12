@@ -38,7 +38,7 @@ int main()
   // 公钥写入文件
   {
     BIO* out = BIO_new_file(pubkey, "w");
-    ret = PEM_write_bio_RSAPublicKey(out, r);
+    ret = PEM_write_bio_RSAPublicKey(out, r); // 也可以使用 PEM_write_bio_RSA_PUBKEY，实际测试时更建议使用 PEM_write_bio_RSAPublicKey
     if (ret != 1) {
       printf("PEM_write_bio_RSAPublicKey err!\n");
       return -1;
