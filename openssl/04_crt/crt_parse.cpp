@@ -59,14 +59,14 @@ bool check_validity(X509* cert)
     printf("ASN1_TIME_diff err!\n");
     return false;
   }
-  if (day >= 0 || sec >= 0) {
+  if (day > 0 || sec > 0) {
       return false;
   }
   if (!ASN1_TIME_diff(&day, &sec, NULL, not_after)) {
     printf("ASN1_TIME_diff err!\n");
     return false;
   }
-  if (day <= 0 || sec <= 0) {
+  if (day < 0 || sec < 0) {
     return false;
   }
   return true;
