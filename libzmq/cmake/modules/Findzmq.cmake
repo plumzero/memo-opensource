@@ -1,7 +1,7 @@
 
-find_library(zmq_LIBRARY zmq HINTS "/usr/local/zmq/lib" NO_DEFAULT_PATH)
+find_library(zmq_LIBRARY zmq HINTS "/usr/local/libzmq/lib" NO_DEFAULT_PATH)
 
-find_path(zmq_INCLUDE zmq.h zmq_utils.h HINTS "/usr/local/zmq/include" NO_DEFAULT_PATH)
+find_path(zmq_INCLUDE zmq.h zmq_utils.h HINTS "/usr/local/libzmq/include" NO_DEFAULT_PATH)
 
 if(zmq_LIBRARY AND zmq_INCLUDE)
     set(ZMQ_FOUND TRUE)
