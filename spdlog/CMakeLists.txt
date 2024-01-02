@@ -5,12 +5,14 @@ project("spdlog test" CXX)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W -Wall -g -O2 -std=c++11")
 
-option(BUILD_DEFAULT            "build default"      OFF)
+option(BUILD_DEFAULT            "build default"      ON)
 option(BUILD_LOGLEVEL           "build loglevel"     OFF)
 option(BUILD_CUSTON             "build custom"       OFF)
 option(BUILD_LOGFILE            "build log-file"     ON)
+option(BUILD_DAILY              "build daily log"    ON)
+option(BUILD_MONTHLY            "build monthly log"  ON)
 
-include_directories(../include)
+include_directories(${CMAKE_SOURCE_DIR}/include)
 
 if (BUILD_DEFAULT)
     add_executable(01_default  01_default.cpp)
@@ -26,4 +28,12 @@ endif()
 
 if (BUILD_LOGFILE)
     add_executable(04_logfile 04_logfile.cpp)
+endif()
+
+if (BUILD_DAILY)
+    add_executable(05_daily 05_daily.cpp)
+endif()
+
+if (BUILD_MONTHLY)
+    add_executable(06_monthly 06_monthly.cpp)
 endif()

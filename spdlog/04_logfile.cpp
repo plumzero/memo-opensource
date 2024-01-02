@@ -21,10 +21,12 @@ int main()
     logger->set_pattern("[%Y-%m-%d %T.%f][%L][%s:%#] %v");
     logger->set_level(spdlog::level::trace);
     logger->flush_on(spdlog::level::info);
-    logger->trace("Should not be flushed");
+    SPDLOG_LOGGER_TRACE(logger, "Should not be flushed");
 
-    logger->info("Test message {}", 1);
-    logger->info("Test message {}", 2);
+    SPDLOG_LOGGER_INFO(logger, "Test message {}", 1);
+    SPDLOG_LOGGER_INFO(logger, "Test message {}", 2);
+
+    SPDLOG_LOGGER_DEBUG(logger, "test3 {}", 3); // 会输出文件名和行号
 
     return 0;
 }

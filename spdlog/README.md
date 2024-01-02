@@ -1,6 +1,8 @@
 
 版本: v1.9.2
 
+在此基础上创建 monthly_file_sink.h，参考 daily_file_sink.h 仿写。
+
 ### 帮助
 
 [pattern速查](pattern.md)
