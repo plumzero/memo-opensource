@@ -20,6 +20,8 @@ int main()
     // %l 日志等级的字符串全称，如 'info'
     logger->set_pattern("[%Y-%m-%d %T.%f][%L][%s:%#] %v");
     logger->set_level(spdlog::level::trace);
+
+    // 当遇到 info 消息级别以上的立刻刷新到日志，也可设置为遇到 warning 级别及其以上的立刻刷新
     logger->flush_on(spdlog::level::info);
     SPDLOG_LOGGER_TRACE(logger, "Should not be flushed");
 
