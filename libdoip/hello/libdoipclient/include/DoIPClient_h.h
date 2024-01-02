@@ -8,24 +8,24 @@
 #include <stdlib.h>
 #include <cstdlib>
 #include <cstring>
+#include <vector>
 
 #include "DiagnosticMessageHandler.h"
 #include "DoIPGenericHeaderHandler.h"
 
 const int _serverPortNr=13400;
-const int _maxDataSize=64;
+const int _maxDataSize=1024;
 
 
 class DoIPClient{
     
 public:
-    void startTcpConnection();   
-    void startUdpConnection();
+    void startTcpConnection(const char* ipAddr = "127.0.0.1");   
+    void startUdpConnection(int udp_port = 13401);
     void sendRoutingActivationRequest();
     void sendVehicleIdentificationRequest(const char* address);
-    void receiveRoutingActivationResponse();
     void receiveUdpMessage();
-    void receiveMessage();
+    std::vector<uint8_t> receiveMessage();
     void sendDiagnosticMessage(unsigned char* targetAddress, unsigned char* userData, int userDataLength);
     void sendAliveCheckResponse();
     void setSourceAddress(unsigned char* address);
@@ -36,6 +36,7 @@ public:
 
     int getSockFd();
     int getConnected();
+    unsigned char* getLogicalAddress() { return LogicalAddressResult; }
     
 private:
     unsigned char _receivedData[_maxDataSize];
@@ -44,7 +45,7 @@ private:
     struct sockaddr_in _serverAddr, _clientAddr; 
     unsigned char sourceAddress [2];
     
-    unsigned char VINResult [17];
+    unsigned char VINResult [17]{0};
     unsigned char LogicalAddressResult [2];
     unsigned char EIDResult [6];
     unsigned char GIDResult [6];

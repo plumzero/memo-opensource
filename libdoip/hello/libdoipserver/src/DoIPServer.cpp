@@ -81,11 +81,11 @@ int DoIPServer::reactToReceivedUdpMessage(int readedBytes) {
 
     int sendedBytes;
     switch(action.type) {
-
+        // 对车辆信息应答报文的处理
         case PayloadType::VEHICLEIDENTRESPONSE:{    //server should not send a negative ACK if he receives the sended VehicleIdentificationAnnouncement
             return -1;
         }
-
+        // 消极应答(NACK)
         case PayloadType::NEGATIVEACK: {
             //send NACK
             unsigned char* message = createGenericHeader(action.type, _NACKLength);
@@ -100,7 +100,7 @@ int DoIPServer::reactToReceivedUdpMessage(int readedBytes) {
             }
             return sendedBytes;
         }
-
+        // 对车辆信息请求报文的处理
         case PayloadType::VEHICLEIDENTREQUEST: {
             unsigned char* message = createVehicleIdentificationResponse(VIN, LogicalGatewayAddress, EID, GID, FurtherActionReq);
             sendedBytes = sendUdpMessage(message, _GenericHeaderLength + _VIResponseLength);   

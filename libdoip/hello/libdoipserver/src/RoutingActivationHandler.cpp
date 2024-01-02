@@ -84,7 +84,7 @@ unsigned char* createRoutingActivationResponse(unsigned short sourceAddress, uns
     message[12] = responseCode;
     
     //reserved for future standardization use
-    message[13] = 0x00;
+    message[13] = 0x00; // 改变这 4 个数值，观察客户端输出(测试 3)
     message[14] = 0x00;
     message[15] = 0x00;
     message[16] = 0x00;           

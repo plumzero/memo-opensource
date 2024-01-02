@@ -1,14 +1,14 @@
+
 #include "DoIPClient_h.h"
+#include <vector>
 
 /*
  *Set up the connection between client and server
  */
-void DoIPClient::startTcpConnection() {
-
-    const char* ipAddr = "127.0.0.1";
+void DoIPClient::startTcpConnection(const char* ipAddr) {
     bool connectedFlag = false;
-    _sockFd = socket(AF_INET,SOCK_STREAM,0);   
-    
+    _sockFd = socket(AF_INET,SOCK_STREAM,0);
+
     if(_sockFd>=0)
     {
         std::cout << "Client TCP-Socket created successfully" << std::endl;
@@ -29,9 +29,9 @@ void DoIPClient::startTcpConnection() {
     }   
 }
 
-void DoIPClient::startUdpConnection(){
+void DoIPClient::startUdpConnection(int udp_port){
     
-    _sockFd_udp = socket(AF_INET,SOCK_DGRAM, 0); 
+    _sockFd_udp = socket(AF_INET,SOCK_DGRAM, 0);
     
     if(_sockFd_udp >= 0)
     {
@@ -42,7 +42,7 @@ void DoIPClient::startUdpConnection(){
         _serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
         
         _clientAddr.sin_family = AF_INET;
-        _clientAddr.sin_port = htons(_serverPortNr);
+        _clientAddr.sin_port = htons(udp_port);
         _clientAddr.sin_addr.s_addr = htonl(INADDR_ANY);
         
         //binds the socket to any IP Address and the Port Number 13400
@@ -69,6 +69,7 @@ void DoIPClient::reconnectServer(){
 /*
  *Build the Routing-Activation-Request for server
  */
+// 创建一个路由激活请求
 const std::pair<int,unsigned char*>* DoIPClient::buildRoutingActivationRequest() {
     
    std::pair <int,unsigned char*>* rareqWithLength= new std::pair<int,unsigned char*>();
@@ -86,9 +87,9 @@ const std::pair<int,unsigned char*>* DoIPClient::buildRoutingActivationRequest()
    rareq[7]=0x07;
    
    //Payload-Type specific message-content
-   rareq[8]=0x0E;  //Source Address
+   rareq[8]=0x0E;  //Source Address(客户端逻辑地址)
    rareq[9]=0x00;
-   rareq[10]=0x00; //Activation-Type
+   rareq[10]=0x00; //Activation-Type (0x00 表示默认值)
    rareq[11]=0x00; //Reserved ISO(default)
    rareq[12]=0x00;
    rareq[13]=0x00;
@@ -103,8 +104,8 @@ const std::pair<int,unsigned char*>* DoIPClient::buildRoutingActivationRequest()
 /*
  * Send the builded request over the tcp-connection to server
  */
+// 创建并发送一个路由激活请求
 void DoIPClient::sendRoutingActivationRequest() {
-        
     const std::pair <int,unsigned char*>* rareqWithLength=buildRoutingActivationRequest();
     write(_sockFd,rareqWithLength->second,rareqWithLength->first);    
 }
@@ -115,6 +116,7 @@ void DoIPClient::sendRoutingActivationRequest() {
  * @param userData          data that will be given to the ecu
  * @param userDataLength    length of userData
  */
+// 创建并发送一条诊断报文
 void DoIPClient::sendDiagnosticMessage(unsigned char* targetAddress, unsigned char* userData, int userDataLength) {
     unsigned short sourceAddress = 0x0E00;
     unsigned char* message = createDiagnosticMessage(sourceAddress, targetAddress, userData, userDataLength);
@@ -125,6 +127,7 @@ void DoIPClient::sendDiagnosticMessage(unsigned char* targetAddress, unsigned ch
 /**
  * Sends a alive check response containing the clients source address to the server
  */
+// 创建并发送一个活跃检查请求
 void DoIPClient::sendAliveCheckResponse() {
     int responseLength = 2;
     unsigned char* message = createGenericHeader(PayloadType::ALIVECHECKRESPONSE, responseLength);
@@ -136,10 +139,25 @@ void DoIPClient::sendAliveCheckResponse() {
 /*
  * Receive a message from server
  */
-void DoIPClient::receiveMessage() {
-    
-    int readedBytes = recv(_sockFd,_receivedData,_maxDataSize, 0);
-    
+// 阻塞接收来自 TCP 连接上的消息
+std::vector<uint8_t> DoIPClient::receiveMessage() {
+    // BUG fix: 处理粘包问题
+    unsigned char hbuf[_GenericHeaderLength] = {0};
+    ssize_t n = recv(_sockFd, hbuf, sizeof(hbuf), MSG_PEEK);
+    if (n != _GenericHeaderLength) {
+        printf("recv(MSG_PEEK) size is not 8(%ld)\n", n);
+        exit(-1);
+    }
+
+    unsigned int payloadLength = 0;
+    payloadLength |= (unsigned int)(hbuf[4] << 24);
+    payloadLength |= (unsigned int)(hbuf[5] << 16);
+    payloadLength |= (unsigned int)(hbuf[6] <<  8);
+    payloadLength |= (unsigned int)(hbuf[7] <<  0);
+
+    unsigned char buf[4096] = { 0 };
+    int readedBytes = read(_sockFd, buf, _GenericHeaderLength + payloadLength);
+    // printf("received %d bytes(should %u)\n", readedBytes, _GenericHeaderLength + payloadLength);
     if(!readedBytes) //if server is disconnected from client; client gets empty messages
     {
         emptyMessageCounter++;
@@ -150,28 +168,41 @@ void DoIPClient::receiveMessage() {
             emptyMessageCounter = 0;
             reconnectServer();
         }
-        return;
+        return {};
     }
 	
-    printf("Client received: ");
-    for(int i = 0; i < readedBytes; i++)
-    {
-        printf("0x%02X ", _receivedData[i]);
-    }    
-    printf("\n ");	
+    // printf("Client received(%d): ", readedBytes);
+    // for(int i = 0; i < readedBytes; i++)
+    // {
+    //     printf("%02X ", buf[i]);
+    // }    
+    // printf("\n ");
+    return std::vector<uint8_t>(buf, buf + readedBytes);
     
-    GenericHeaderAction action = parseGenericHeader(_receivedData, readedBytes);
+    GenericHeaderAction action = parseGenericHeader(buf, readedBytes);
 
-    if(action.type == PayloadType::DIAGNOSTICPOSITIVEACK || action.type == PayloadType::DIAGNOSTICNEGATIVEACK) {
+    // 诊断信息积极/消极应答
+    if(action.type == PayloadType::DIAGNOSTICPOSITIVEACK ||
+       action.type == PayloadType::DIAGNOSTICNEGATIVEACK ||
+       action.type == PayloadType::ALIVECHECKREQUEST ||
+       action.type == PayloadType::ROUTINGACTIVATIONRESPONSE) {
         switch(action.type) {
             case PayloadType::DIAGNOSTICPOSITIVEACK: {
                 std::cout << "Client received diagnostic message positive ack with code: ";
-                printf("0x%02X ", _receivedData[12]);
+                printf("0x%02X ", buf[12]);
                 break;
             }
             case PayloadType::DIAGNOSTICNEGATIVEACK: {
                 std::cout << "Client received diagnostic message negative ack with code: ";
-                printf("0x%02X ", _receivedData[12]);
+                printf("0x%02X ", buf[12]);
+                break;
+            }
+            case PayloadType::ALIVECHECKREQUEST: {
+                std::cout << "Client received alive check request" << std::endl;
+                break;
+            }
+            case PayloadType::ROUTINGACTIVATIONRESPONSE: {
+                std::cout << "Client received routing activation response" << std::endl;
                 break;
             }
             default: {
@@ -181,21 +212,22 @@ void DoIPClient::receiveMessage() {
         }
         std::cout << std::endl;
     }
- 
+    
+    return {};
 }
 
+// 阻塞接收来自 UDP 连接上的消息
 void DoIPClient::receiveUdpMessage() {
-    
+
     unsigned int length = sizeof(_clientAddr);
     
     int readedBytes;
     readedBytes = recvfrom(_sockFd_udp, _receivedData, _maxDataSize, 0, (struct sockaddr*)&_clientAddr, &length);
-    
+
     if(PayloadType::VEHICLEIDENTRESPONSE == parseGenericHeader(_receivedData, readedBytes).type)
     {
         parseVIResponseInformation(_receivedData);
     }
-    
 }
 
 const std::pair<int,unsigned char*>* DoIPClient::buildVehicleIdentificationRequest(){
@@ -221,6 +253,7 @@ const std::pair<int,unsigned char*>* DoIPClient::buildVehicleIdentificationReque
     
 }
 
+// 创建并发送车辆信息请求
 void DoIPClient::sendVehicleIdentificationRequest(const char* address){
      
     int setAddressError = inet_aton(address,&(_serverAddr.sin_addr));
@@ -274,6 +307,7 @@ int DoIPClient::getConnected() {
     return _connected;
 }
 
+// 解析收到的车辆信息应答报文
 void DoIPClient::parseVIResponseInformation(unsigned char* data){
     
     //VIN
@@ -317,7 +351,7 @@ void DoIPClient::displayVIResponseInformation()
 {
     //output VIN
     std::cout << "VIN: ";
-    for(int i = 0; i < 17 ;i++)
+    for(int i = 0; i < 17 && VINResult[i] != 0x0 ;i++)
     {
         std::cout << (unsigned char)(int)VINResult[i];
     }

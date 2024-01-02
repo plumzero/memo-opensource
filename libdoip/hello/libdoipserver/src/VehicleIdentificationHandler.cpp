@@ -2,7 +2,7 @@
 #include <iostream>
 
 
-
+// 创建车辆信息响应报文(一般由服务端创建)
 unsigned char* createVehicleIdentificationResponse(std::string VIN,unsigned short LogicalAddress, 
                                                     unsigned char* EID, unsigned char* GID,
                                                     unsigned char FurtherActionReq) //also used für the Vehicle Announcement

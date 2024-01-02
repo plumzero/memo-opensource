@@ -40,7 +40,7 @@ void DoIPSimulator::listenTcp() {
     auto notify_cb = std::bind(&DoIPSimulator::DiagnosticMessageReceived, this, std::placeholders::_1);
     auto close_cb = std::bind(&DoIPSimulator::CloseConnection, this);
     connection_->setCallback(diag_cb, notify_cb, close_cb);
-    connection_->setGeneralInactivityTime(50000);
+    connection_->setGeneralInactivityTime(5);
 
     while(connection_->isSocketActive()) {
       connection_->receiveTcpMessage();
@@ -58,9 +58,9 @@ void DoIPSimulator::listenUdp() {
 }
 
 // 当 doip 库接收到一个诊断消息时，会触发此回调
-// @param address   ECU 的逻辑地址
-// @param data      收到的消息
-// @param length    收到的消息的长度
+// @param address   ECU 的逻辑地址(可能是服务端地址)
+// @param data      用户数据
+// @param length    用户数据长度
 void DoIPSimulator::ReceiveFromLibrary(unsigned short address, unsigned char* data, int length) {
   std::cout << "DoIP Message received from 0x" << std::hex << address << ": ";
   for(int i = 0; i < length; i++) {
@@ -68,13 +68,14 @@ void DoIPSimulator::ReceiveFromLibrary(unsigned short address, unsigned char* da
   }
   std::cout << std::endl;
 
+  // 如果用户数据 不符合
   if(length > 2 && data[0] == 0x22)  {
     std::cout << "-> Send diagnostic message positive response" << std::endl;
-    unsigned char responseData[] = { 0x62, data[1], data[2], 0x01, 0x02, 0x03, 0x04};
+    unsigned char responseData[] = { 0x11, 0x22, 0x33, 0x44, 0x55 };
     connection_->sendDiagnosticPayload(LOGICAL_ADDRESS, responseData, sizeof(responseData));
   } else {
     std::cout << "-> Send diagnostic message negative response" << std::endl;
-    unsigned char responseData[] = { 0x7F, data[0], 0x11};
+    unsigned char responseData[] = { 0x66, 0x77, 0x88, 0x99 };
     connection_->sendDiagnosticPayload(LOGICAL_ADDRESS, responseData, sizeof(responseData));
   }
 }
@@ -86,14 +87,21 @@ bool DoIPSimulator::DiagnosticMessageReceived(unsigned short targetAddress) {
   (void)targetAddress;
   unsigned char ackCode;
 
-  std::cout << "Received Diagnostic message" << std::endl;
+  std::cout << "Received Diagnostic message. targetAddress=" << targetAddress << std::endl;
 
-  //send positiv ack
-  ackCode = 0x00;
-  std::cout << "-> Send positive diagnostic message ack" << std::endl;
-  connection_->sendDiagnosticAck(LOGICAL_ADDRESS, true, ackCode);
-
-  return true;
+  if (targetAddress == LOGICAL_ADDRESS) {
+    //send positive ack
+    ackCode = 0x00;
+    std::cout << "-> Send positive diagnostic message ack" << std::endl;
+    connection_->sendDiagnosticAck(LOGICAL_ADDRESS, true, ackCode);
+    return true;
+  } else {
+    //send negative ack
+    ackCode = 0x03; // 未知的目标地址
+    std::cout << "-> Send negative diagnostic message ack" << std::endl;
+    connection_->sendDiagnosticAck(LOGICAL_ADDRESS, false, ackCode);
+    return false;
+  }
 }
 
 /**

@@ -61,7 +61,6 @@ GenericHeaderAction parseGenericHeader(unsigned char* data, int dataLenght) {
 
     //Only check header if received data is greater or equals the set header length
     if(dataLenght >= _GenericHeaderLength) {
-        
         //Check Generic DoIP synchronization pattern(校验协议包版本及版本反码)
         if((int)(data[1] ^ (0xFF)) != (int)data[0]) {
             //Return Error, Protocol Version not correct
@@ -85,14 +84,23 @@ GenericHeaderAction parseGenericHeader(unsigned char* data, int dataLenght) {
         if(data[2] == 0x00 && data[3] == 0x05) {	//Value of RoutingActivationRequest = 0x0005
             messagePayloadType = PayloadType::ROUTINGACTIVATIONREQUEST; // 路由激活请求
         }
+        else if (data[2] == 0x00 && data[3] == 0x06) {
+            messagePayloadType = PayloadType::ROUTINGACTIVATIONRESPONSE; // 路由激活应答
+        }
         else if(data[2] == 0x00 && data[3] == 0x04){
             messagePayloadType = PayloadType::VEHICLEIDENTRESPONSE; // 车辆信息应答报文
         }
         else if(data[2] == 0x00 && data[3] == 0x01) {   //Value of Vehicle Identification Request = 0x0001
             messagePayloadType = PayloadType::VEHICLEIDENTREQUEST; // 车辆信息请求报文
         }
+        else if (data[2] == 0x00 && data[3] == 0x07) {
+            messagePayloadType = PayloadType::ALIVECHECKREQUEST; // 活跃检查请求报文    
+        }
+        else if (data[2] == 0x00 && data[3] == 0x08) {
+            messagePayloadType = PayloadType::ALIVECHECKRESPONSE; // 活跃检查应答报文
+        }
         else if(data[2] == 0x80 && data[3] == 0x01) {   //Value of Diagnose Message = 0x8001
-            messagePayloadType = PayloadType::DIAGNOSTICMESSAGE; // 诊断报文
+            messagePayloadType = PayloadType::DIAGNOSTICMESSAGE; // 诊断报文 
         } 
         else if(data[2] == 0x80 && data[3] == 0x02) {   //Value of Diagnostic Message positive ack = 0x8002
             messagePayloadType = PayloadType::DIAGNOSTICPOSITIVEACK; // 诊断积极应答报文
@@ -110,6 +118,15 @@ GenericHeaderAction parseGenericHeader(unsigned char* data, int dataLenght) {
         switch(messagePayloadType) {
             case PayloadType::ROUTINGACTIVATIONREQUEST: {
                 if(payloadLength != 7 && payloadLength != 11) {
+                    action.type = PayloadType::NEGATIVEACK;
+                    action.value = _InvalidPayloadLengthCode;
+                    return action;
+                }
+                break;
+            }
+
+            case PayloadType::ALIVECHECKREQUEST: {
+                if (payloadLength != 0) {
                     action.type = PayloadType::NEGATIVEACK;
                     action.value = _InvalidPayloadLengthCode;
                     return action;
@@ -165,6 +182,15 @@ GenericHeaderAction parseGenericHeader(unsigned char* data, int dataLenght) {
                 if(payloadLength < 5) {
                     action.type = PayloadType::NEGATIVEACK;
                     action.value = _InvalidPayloadLengthCode;
+                }
+                break;
+            }
+
+            case PayloadType::ROUTINGACTIVATIONRESPONSE: {
+                if(payloadLength != 9 && payloadLength != 13) {
+                    action.type = PayloadType::NEGATIVEACK;
+                    action.value = _InvalidPayloadLengthCode;
+                    return action;
                 }
                 break;
             }
@@ -230,6 +256,12 @@ unsigned char* createGenericHeader(PayloadType type, uint32_t length) {
         case PayloadType::ALIVECHECKRESPONSE: {
             header[2] = 0x00;
             header[3] = 0x08;
+            break;
+        }
+
+        case PayloadType::ALIVECHECKREQUEST: {
+            header[2] = 0x00;
+            header[3] = 0x07;
             break;
         }
 

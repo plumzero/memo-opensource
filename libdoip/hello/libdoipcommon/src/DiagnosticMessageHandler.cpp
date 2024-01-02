@@ -17,9 +17,9 @@ unsigned char parseDiagnosticMessage(DiagnosticCallback callback, unsigned char 
                                     unsigned char* data, int diagMessageLength) {
     std::cout << "parse Diagnostic Message" << std::endl;
     if(diagMessageLength >= _DiagnosticMessageMinimumLength) {
-        //Check if the received SA is registered on the socket
+        //Check if the received logical_address is registered on the socket
         if(data[0] != sourceAddress[0] || data[1] != sourceAddress[1]) {
-            //SA of received message is not registered on this TCP_DATA socket
+            //logical_address of received message is not registered on this TCP_DATA socket
             return _InvalidSourceAddressCode;
         }
 

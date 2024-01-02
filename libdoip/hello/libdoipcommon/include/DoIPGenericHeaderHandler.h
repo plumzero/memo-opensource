@@ -21,6 +21,7 @@ enum PayloadType {
     DIAGNOSTICPOSITIVEACK,
     DIAGNOSTICNEGATIVEACK,
     ALIVECHECKRESPONSE,
+    ALIVECHECKREQUEST,
 };
 
 struct GenericHeaderAction {

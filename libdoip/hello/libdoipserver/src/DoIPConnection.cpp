@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <iomanip>
+#include <stdio.h>
 
 /**
  * Closes the connection by closing the sockets
@@ -115,6 +116,7 @@ int DoIPConnection::reactOnReceivedTcpMessage(GenericHeaderAction action, unsign
         }
         // 对路由激活请求的处理
         case PayloadType::ROUTINGACTIVATIONREQUEST: {
+            std::cout << "received Routing Activation Response" << std::endl;
             //start routing activation handler with the received message
             unsigned char result = parseRoutingActivation(payload);
             unsigned char clientAddress [2] = {payload[0], payload[1]};
@@ -140,8 +142,9 @@ int DoIPConnection::reactOnReceivedTcpMessage(GenericHeaderAction action, unsign
 
             return sentBytes;
         }
-        // 对活跃检查请求的处理(不进行处理)
+        // 对活跃检查响应的处理(不进行处理)
         case PayloadType::ALIVECHECKRESPONSE: {
+            std::cout << "received Alive Check Response from client" << std::endl;
             return 0;
         }
         // 对诊断报文的处理
@@ -208,7 +211,7 @@ void DoIPConnection::setGeneralInactivityTime(uint16_t seconds) {
 // @param sourceAddress 发送方(这里指服务端)的逻辑地址
 // @param data          要发送的载荷
 // @param length        要发送的载荷的长度
-void DoIPConnection::sendDiagnosticPayload(unsigned short sourceAddress, unsigned char* data, int length) {
+void DoIPConnection::sendDiagnosticPayload(unsigned short sourceAddress, unsigned char* data, const int length) {
 
     std::cout << "Sending diagnostic data: ";
     for(int i = 0; i < length; i++) {
@@ -216,8 +219,29 @@ void DoIPConnection::sendDiagnosticPayload(unsigned short sourceAddress, unsigne
     }
     std::cout << std::endl;
     
-    unsigned char* message = createDiagnosticMessage(sourceAddress, routedClientAddress, data, length);  
+    unsigned char* message = createDiagnosticMessage(sourceAddress, routedClientAddress, data, length);
+    {
+        std::cout << "-----------------> _GenericHeaderLength = " << _GenericHeaderLength << std::endl;
+        std::cout << "-----------------> _DiagnosticMessageMinimumLength = " << _DiagnosticMessageMinimumLength << std::endl;
+        std::cout << "-----------------> length = " << length << std::endl;
+        std::cout << "-----------------> total = " << _GenericHeaderLength + _DiagnosticMessageMinimumLength + length << std::endl;
+        volatile int len = _GenericHeaderLength + (_DiagnosticMessageMinimumLength + length);
+        std::cout << "-----------------> xlen = " << len << std::endl; 
+    }
+    int len = _GenericHeaderLength + _DiagnosticMessageMinimumLength + length;
+    printf("len=%d\n", len);
     sendMessage(message, _GenericHeaderLength + _DiagnosticMessageMinimumLength + length);
+    {
+        printf("_GenericHeaderLength(x)=%d,_DiagnosticMessageMinimumLength(y)=%d,length(z)=%d\n", _GenericHeaderLength, _DiagnosticMessageMinimumLength, length);
+        int len_x_y = _GenericHeaderLength + _DiagnosticMessageMinimumLength;
+        int len_x_z = _GenericHeaderLength + length;
+        int len_y_z = _DiagnosticMessageMinimumLength + length;
+        int len_x_y_z = _GenericHeaderLength + _DiagnosticMessageMinimumLength + length;
+        printf("len_x_y=%d,len_x_z=%d,len_y_z=%d,len_x_y_z=%d\n", len_x_y, len_x_z, len_y_z, len_x_y_z);
+        printf("length=%d\n", _GenericHeaderLength + _DiagnosticMessageMinimumLength + length);
+        int len = _GenericHeaderLength + _DiagnosticMessageMinimumLength + length;
+        printf("len=%d\n", len);
+    }
 }
 
 /*

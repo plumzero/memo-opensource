@@ -30,7 +30,7 @@ public:
     int receiveTcpMessage();
     unsigned long receiveFixedNumberOfBytesFromTCP(unsigned long payloadLength, unsigned char *receivedData);
 
-    void sendDiagnosticPayload(unsigned short sourceAddress, unsigned char* data, int length);
+    void sendDiagnosticPayload(unsigned short sourceAddress, unsigned char* data, const int length);
     bool isSocketActive() { return tcpSocket != 0; };
 
     void triggerDisconnection();
@@ -50,7 +50,7 @@ private:
     CloseConnectionCallback close_connection;
     DiagnosticMessageNotification notify_application;
 
-    unsigned char* routedClientAddress; // 保存的客户端的逻辑地址
+    unsigned char* routedClientAddress{nullptr}; // 保存的客户端的逻辑地址
     unsigned short logicalGatewayAddress = 0x0000;  // 服务端(本端)逻辑地址
         
     void closeSocket();
