@@ -8,6 +8,8 @@ option(BUILD_03_PUB_SUB        "Build 03_pub_sub program"   ON)
 option(BUILD_04_PUB_SUB        "Build 04_pub_sub program"   ON)
 option(BUILD_05_PUSH_PULL      "Build 05_push_pull program" ON)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-attributes")
+
 #
 # if u wanna release, do like this `cmake -DCMAKE_BUILD_TYPE=Release`
 #
