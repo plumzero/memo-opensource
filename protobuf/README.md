@@ -6,20 +6,25 @@
 
 ## 安装步骤
 
-- 生成配置文件
-  ```shell
-    ./autogen.sh
-  ```
-- 进行配置
-  ```shell
-    ./configure --prefix=/usr/local/protobuf
-  ```
-- 编译安装
-  ```shell
-    make
-    make install
-  ```
+方式一:
 
+```s
+  ./autogen.sh
+  ./configure --prefix=/usr/local/protobuf
+  make
+  make install
+```
+
+方式二:
+
+```s
+  tar -zxvf protobuf-3.13.0.tar.gz
+  cd protobuf-3.13.0
+  cd cmake
+  cmake . -Dprotobuf_BUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX=/usr/local/protobuf
+  cmake --build .
+  make install
+```
 
 ## 利用 protoc 命令创建 .cpp 文件
 
