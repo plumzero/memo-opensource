@@ -15,6 +15,15 @@
   make install
 ```
 
+这种方式在有的平台上可能会有些问题，可以使用[这个autogen.sh](autogen.sh)替换原始的同名文件，并将 Makefile.am 中的:
+```s
+DIST_SUBDIRS = src conformance benchmarks third_party/googletest
+```
+改为:
+```s
+DIST_SUBDIRS = src conformance benchmarks
+```
+
 方式二:
 
 ```s
