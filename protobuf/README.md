@@ -30,8 +30,10 @@ DIST_SUBDIRS = src conformance benchmarks
   tar -zxvf protobuf-3.13.0.tar.gz
   cd protobuf-3.13.0
   cd cmake
-  cmake . -Dprotobuf_BUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX=/usr/local/protobuf
-  cmake --build .
+  mkdir build
+  cd build
+  cmake .. -Dprotobuf_BUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX=/usr/local/protobuf
+  make
   make install
 ```
 
