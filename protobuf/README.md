@@ -49,6 +49,23 @@ DIST_SUBDIRS = src conformance benchmarks
   ```
   如果 `addressbook.proto` 内部还依赖其他文件，可以通过 `-I` 或 `--proto_path` 指定依赖文件所在的最深层目录。
 
+## 最佳实践
+
+- 字段编号规则
+  - 1-15: 常用字段(占用1字节)
+  - 16-2047: 非常用字段
+  - 不要修改已使用的编号
+- 兼容性设计
+  ```c
+  // 保留废弃字段编号，防止被重用
+  message Foo {
+    reserved 2, 5 to 10;  // 保留字段编号
+    reserved "old_field"; // 保留字段名
+  }
+  ```
+- 性能优化
+  - 对小消息使用 bytes 而非 string
+  - 使用 packed=true 优化重复数值字段
 
 ## 测试目录说明
 
